@@ -47,30 +47,18 @@ uu <- read_excel("Data/UU2020_au_01-01-2021.xlsx", sheet = 2, skip = 5)
 
 ```{r data_geofilter}
 # Extraction des communes faisant partie de l'UU Paris
-uu_paris <- uu %>% 
-  filter(UU2020 == "00851")
-
 uu_avignon <- uu %>%  
   filter(UU2020 == "00754")
 
 # Filtrage de la table disp
-disp_paris <- disp %>% 
-  filter(CODGEO %in% uu_paris$CODGEO)
-
 disp_avignon <- disp %>% 
   filter(CODGEO %in% uu_avignon$CODGEO)
 
 # Filtrage de la table pvr
-pvr_paris <- pvr %>% 
-  filter(CODGEO %in% uu_paris$CODGEO)
-
 pvr_avignon <- pvr %>% 
   filter(CODGEO %in% uu_avignon$CODGEO)
 
 # Filtrage de la table dec
-dec_paris <- dec %>% 
-  filter(CODGEO %in% uu_paris$CODGEO)
-
 dec_avignon <- dec %>% 
   filter(CODGEO %in% uu_avignon$CODGEO)
 
@@ -81,15 +69,9 @@ dec_avignon <- dec %>%
 
 ```{r data_socfilter}
 # Exemple 1: sélection des variables décrivant les énages monoparentaux
-disp_paris_mono <- disp_paris %>% 
-    select(CODGEO, contains("TYM5"))
-
 disp_avignon_mono <- disp_avignon %>% 
     select(CODGEO, contains("TYM5"))
 # Exemple 2: sélection des variables décrivant l'ensemble des ménages
-disp_paris_ens <- disp_paris %>% 
-  select(1:30)
-
 disp_avignon_ens <- disp_avignon %>% 
   select(1:30)
 
@@ -101,26 +83,16 @@ Quelques fonctions utiles
 
 ```{r explor}
 # Contrôler la présence de valeurs manquantes dans une variable par communes ménages monoparentaux
-table(is.na(disp_paris_mono$TYM5D118))
 table(is.na(disp_avignon_mono$TYM5D118))
 
 #Pour l'ensemble
-table(is.na(disp_paris_ens$Q118))
 table(is.na(disp_avignon_ens$Q118))
 
 # Connaitre le résumé statistique
 summary(pvr_paris$TP6018)
 summary(pvr_avignon$TP6018)
+
 # Observer la distribution d'une variable
-# Courbe de densité
-ggplot(disp_paris_ens, aes(x=Q218)) + 
-  geom_density()+
-  scale_y_continuous(labels = scales::comma)+ # se débarasser de la notation scientifique
-  # Habiller le graphique
-      ylab("Densité de probabilité")+
-  xlab("Revenu disponible médian")+
-  ggtitle("Distribution du revenu médian par commune à Paris") 
-#+ gg
 ggplot(disp_avignon_ens, aes(x=Q218)) + 
   geom_density()+
   scale_y_continuous(labels = scales::comma)+ # se débarasser de la notation scientifique
@@ -130,20 +102,36 @@ ggplot(disp_avignon_ens, aes(x=Q218)) +
   ggtitle("Distribution du revenu médian par commune à Avignon") 
 
 # Boîte à moustache
-ggplot(disp_paris_ens, aes(x = Q218))+
-  geom_boxplot()
-
 ggplot(disp_avignon_ens, aes(x = Q218))+
   geom_boxplot()
 
 # Graphique rang-taille
-ggplot(disp_paris_ens, aes(x= reorder(CODGEO, -NBPERS18), y = NBPERS18))+
-  geom_point()+
-  scale_y_log10("Population communale", labels = scales:: comma)+
-  scale_x_discrete("Rang", labels= NULL)
-  
 ggplot(disp_avignon_ens, aes(x= reorder(CODGEO, -NBPERS18), y = NBPERS18))+
   geom_point()+
   scale_y_log10("Population communale", labels = scales:: comma)+
   scale_x_discrete("Rang", labels= NULL)
 ```
+
+Pour les fonds de cartes : https://www.data.gouv.fr/fr/datasets/decoupage-administratif-communal-francais-issu-d-openstreetmap/ 
+
+```{r map}
+library(mapview)
+library(mapsf)
+library(tidyverse)
+
+carte_uu <- st_read("Cartographie/communes-20220101-shp/communes-20220101.shp")
+carte_uu <- rename(carte_uu, "CODGEO" ="insee")
+carte_uu <- left_join(uu_avignon, carte_uu, by="CODGEO")
+carte_uu <- st_sf(carte_uu)
+mapview::mapview(carte_uu)
+
+mf_map(carte_uu)
+```
+
+## Sujet : Les revenus des familles monoparentales
+- Comparer les familles monoparentales par rapport aux autres catégories de famille et par rapport à l'ensemble de la population : est-ce qu'il y a plus d'inégalités entre les familles monoparentales qu'entre les autres ?
+- Échelle de la commune intéressant quand on est à l'échelle de l'unité urbaine : distribution des familles monoparentales dans la commune centre par rapport à la commune périphérique.
+
+
+
+
