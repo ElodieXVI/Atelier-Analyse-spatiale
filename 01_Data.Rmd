@@ -132,6 +132,9 @@ mf_map(carte_uu)
 - Comparer les familles monoparentales par rapport aux autres catégories de famille et par rapport à l'ensemble de la population : est-ce qu'il y a plus d'inégalités entre les familles monoparentales qu'entre les autres ?
 - Échelle de la commune intéressant quand on est à l'échelle de l'unité urbaine : distribution des familles monoparentales dans la commune centre par rapport à la commune périphérique.
 
+*Variables :* les variables générales : 30 première colonnes, tous les TYMC5. 
 
+- barplot rapport interquartiles dans les communes
 
+Principales villes de l'unité urbaine en nombre d'habitants : Avignon, Carpentras, Orange, Cavaillon, L'isle-sur-la-sorgue. 
 
