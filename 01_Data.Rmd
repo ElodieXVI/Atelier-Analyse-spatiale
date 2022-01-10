@@ -107,7 +107,7 @@ ggplot(disp_avignon_ens, aes(x = Q218))+
 
 # Graphique rang-taille
 ggplot(disp_avignon_ens, aes(x= reorder(CODGEO, -NBPERS18), y = NBPERS18))+
-  geom_point()+
+  geom_point() +
   scale_y_log10("Population communale", labels = scales:: comma)+
   scale_x_discrete("Rang", labels= NULL)
 ```
@@ -136,5 +136,10 @@ mf_map(carte_uu)
 
 - barplot rapport interquartiles dans les communes
 
-Principales villes de l'unité urbaine en nombre d'habitants : Avignon, Carpentras, Orange, Cavaillon, L'isle-sur-la-sorgue. 
+Principales villes de l'unité urbaine en nombre d'habitants : Avignon, Carpentras, Orange, Cavaillon, L'isle-sur-la-sorgue.
+
+Principales voies d'accès à l'unité urbaine d'Avignon : aéroport d'Avignon-Provence, TGV d'Avignon, A7 (autoroute du soleil)
+Le Rhône.
+PNR : au sud de l'unité urbaine : 2 PNR Alpilles et Lubéron.
+```
 
