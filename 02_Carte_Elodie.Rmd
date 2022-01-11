@@ -17,31 +17,31 @@ library(tidyverse)
 comsf <- st_read(dsn = "/Users/elodie/Dropbox/QESS2/Cartographie/communes-20220101-shp/communes-20220101.shp", 
                   stringsAsFactors = F)
 # filtrer comme un data frame
-comsf_paris <- comsf %>% 
-  filter(insee %in% uu_paris$CODGEO) %>% 
+comsf_avignon_mono <- comsf %>% 
+  filter(insee %in% uu_avignon$CODGEO) %>% 
   rename(CODGEO = insee)
 # interroger le système de coordoonées 
-st_crs(comsf_paris)
+st_crs(comsf_avignon)
 # projeter le fond de carte dans le référentiel Lambert93 (adapté pour la France)
-comsf_paris <- st_transform(comsf_paris, crs = 2154)
+comsf_avignon <- st_transform(comsf_avignon, crs = 2154)
 # visualiser la géométrie
-plot(comsf_paris$geometry)
+plot(comsf_avignon$geometry)
 # joindre les données attributaires
-comsf_paris <- left_join(comsf_paris, pvr_paris, by = "CODGEO")
-comsf_paris <- left_join(comsf_paris, disp_paris_ens, by = "CODGEO")
+comsf_avignon <- left_join(comsf_avignon, pvr_avignon, by = "CODGEO")
+comsf_avignon <- left_join(comsf_avignon, disp_avignon_ens, by = "CODGEO")
 # vérifier qu'il s'agit toujours d'un objet sf...
-class(comsf_paris)
+class(comsf_avignon)
 # sinon, réassigner
-comsf_paris <- st_sf(comsf_paris)
+comsf_avignon <- st_sf(comsf_avignon)
 ```
 
 # 1 bis: Cartographier sans réfléchir
 
 ```{r mapview}
 # pour le meilleur
-mapview(comsf_paris, zcol = "TP6018")
+mapview(comsf_avignon, zcol = "")
 # et le pire
-mapview(comsf_paris, zcol = "NBPERS18")
+mapview(comsf_avignon, zcol = "NBPERS18")
 ```
 
 
@@ -53,19 +53,18 @@ Plusieurs méthodes de discrétisation : manuellement en fixant des bornes, selo
 # 2. Carte de stock
 
 ```{r stock}
-mf_map(comsf_paris, col = "grey80", border = "grey50")
-mf_map(comsf_paris, 
-       var = "NBPERS18", 
-       type = "prop", 
+mf_map(comsf_avignon, col = "grey80", border = "grey50")
+mf_map(comsf_avignon, 
+       var = "Q218", 
+       type = "choro", 
        border = "white", 
        col = "darkblue", 
-      inches = 0.3, 
-      symbol = "circle",
+      nbreaks = 4,
       leg_title = "Population communale",
       add= TRUE)
 
-mf_layout(title = "Populations communales de l'unité urbaine de Paris (2018)", 
-    credits = "Auteur: R. Leconte, 2022. Données: INSEE, Filosofi, 2018",
+mf_layout(title = "Populations communales de l'unité urbaine d'e Paris d'Avignon (2018)", 
+    credits = "Données: INSEE, Filosofi, 2018",
     arrow = FALSE)
 ```
 
