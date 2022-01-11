@@ -1,0 +1,184 @@
+---
+title: "Stage intensif"
+author: "Tahera Bilger"
+date: "1/10/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+
+```{r}
+library(readxl)
+library(dplyr)
+library(ggplot2)
+
+setwd("C:/Users/taherabilger/Dropbox/Mac/Desktop/R/")
+getwd()
+```
+```{r}
+# Table de la distribution des revenus 
+disp <- read.csv("indic-struct-distrib-revenu-2018-COMMUNES_csv/FILO2018_DISP_COM.csv", sep = ";")
+
+# Table des taux de pauvreté
+pvr <- read.csv("indic-struct-distrib-revenu-2018-COMMUNES_csv/FILO2018_DISP_Pauvres_COM.csv", sep = ";")
+
+# Table des déciles revenu
+dec <- read.csv("indic-struct-distrib-revenu-2018-COMMUNES_csv/FILO2018_TRDECILES_DISP_COM.csv", sep = ";")
+
+# Table de la composition communale des unités urbaines
+uu <- read_excel("UU2020_au_01-01-2021.xlsx", sheet = 2, skip = 5)
+```
+
+```{r}
+# Extraction des communes faisant partie de l'UU Avignon
+uu_avignon <- uu %>% 
+  filter(UU2020 == "00754")
+# Filtrage de la table disp
+disp_avignon <- disp %>% 
+  filter(CODGEO %in% uu_avignon$CODGEO)
+# Filtrage de la table pvr
+pvr_avignon <- pvr %>% 
+  filter(CODGEO %in% uu_avignon$CODGEO)
+# Filtrage de la table dec
+dec_avignon <- dec %>% 
+  filter(CODGEO %in% uu_avignon$CODGEO)
+```
+
+```{r}
+# Exemple 1: sélection des variables décrivant les ménages monoparentaux
+disp_avignon_mono <- disp_avignon %>% 
+    select(CODGEO, contains("TYM5"))
+# Exemple 2: sélection des variables décrivant l'ensemble des ménages
+disp_avignon_ens <- disp_avignon %>% 
+  select(1:30)
+
+```
+
+```{r}
+# Observer la distribution d'une variable
+# Courbe de densité
+ggplot(disp_avignon_ens, aes(x=Q218)) + 
+  geom_density()+
+  scale_y_continuous(labels = scales::comma)+ # se débarrasser de la notation scientifique
+  # Habiller le graphique
+      ylab("Densité de probabilité")+
+  xlab("Revenu disponible médian")+
+  ggtitle("Distribution du revenu médian par commune à Avignon")
+```
+```{r}
+ggplot(disp_avignon_ens, aes(x = Q218))+
+  geom_boxplot()
+
+```
+```{r}
+# Graphique rang-taille
+
+ggplot(disp_avignon_ens, aes(x= reorder(CODGEO, -NBPERS18), y = NBPERS18))+
+  geom_point()+
+  scale_y_log10("Population communale", labels = scales:: comma)+
+  scale_x_discrete("Rang", labels= NULL)
+  
+```
+
+```{r}
+summary(disp_avignon_mono$TYM5PPSOC18)
+summary(disp_avignon_ens$PPSOC18)
+
+
+
+```
+
+```{r}
+ggplot(disp_avignon_mono, aes(x=TYM5PPSOC18)) + 
+  geom_density()+
+  scale_y_continuous(labels = scales::comma)+ # se débarrasser de la notation scientifique
+  # Habiller le graphique
+      ylab("Densité de probabilité")+
+  xlab("Part des prestations sociales dans les revenus des familles monoparentales")+
+  ggtitle("Part des prestations sociales dans les revenus des familles monoparentales")
+```
+
+```{r}
+ggplot(disp_avignon_mono, aes(x=TYM5Q218)) + 
+  geom_density()+
+  scale_y_continuous(labels = scales::comma)+ # se débarrasser de la notation scientifique
+  # Habiller le graphique
+      ylab("Densité de probabilité")+
+  xlab("Revenus médians des familles monoparentales")+
+  ggtitle("Revenus médians des familles monoparentales")
+
+```
+```{r}
+plot(disp_avignon_ens$Q3_Q1)
+```
+```{r}
+library(mapview)
+library(mapsf)
+library(tidyverse)
+
+
+carte_uu <- st_read("communes-20220101-shp/communes-20220101.shp")
+carte_uu <- rename(carte_uu, "CODGEO" ="insee")
+carte_uu <- left_join(uu_avignon, carte_uu, by="CODGEO")
+carte_uu <- st_sf(carte_uu)
+mapview::mapview(carte_uu)
+mf_map(carte_uu)
+```
+
+```{r}
+
+carte_uu <- left_join(disp_avignon_mono, carte_uu, by="CODGEO")
+carte_uu <- st_sf(carte_uu)
+
+
+mf_map(carte_uu)
+mf_map(carte_uu, 
+       var = "TYM5Q218", 
+       type = "choro", 
+       breaks = "quantile",
+       nbreaks = 4,
+       leg_title = "Revenu médian des familles mono", 
+       add= TRUE, 
+       border = NA)
+
+```
+
+```{r}
+ggplot(disp_avignon) + 
+  geom_density(aes(x= TYM5Q218), color = "red")+
+  geom_density(aes(x= Q218), color= "blue")+
+  scale_y_continuous(labels = scales::comma)+ # se débarrasser de la notation scientifique
+  # Habiller le graphique
+      ylab("Densité de probabilité")+
+  xlab("Revenus médians")+
+  ggtitle("Revenus médians des familles monoparentales VS population générale ") 
+
+min(disp_avignon$Q218)
+```
+
+
+
