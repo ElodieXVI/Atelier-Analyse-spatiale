@@ -86,9 +86,6 @@ mf_map(comsf_avignon,
 mf_layout(title = "Populations communales de l'unité urbaine d'Avignon (2018)", 
     credits = "Auteur: R. Leconte, 2022. Données: INSEE, Filosofi, 2018",
     arrow = FALSE)
-
-
-
 ```
 
 

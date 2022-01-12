@@ -32,7 +32,7 @@ com_borders$CODGEO <-  paste0(com_borders$CODGEO1, "_", com_borders$CODGEO2)
 rownames(com_borders) <- com_borders$CODGEO
 com_borders  <- com_borders [,c("CODGEO","CODGEO1","CODGEO2","geometry")]
 plot(com_borders$geometry)
-# Récupération de la variable d'intéret, en supprimant la géométrie associée
+# Récupération de la variable d'intérêt, en supprimant la géométrie associée
 vals <- st_set_geometry(x = comsf_avignon[, c("CODGEO","Q218")], 
                         value = NULL)
 # Double jointure pour récupérer les valeurs des NUTS limitrophes
@@ -61,6 +61,7 @@ top_n(wt = Q218, -5)
 top <- comsf_avignon %>% 
   top_n(wt = Q218, 5)
 topbot <- bind_rows(top, bot)
+
 # carte
 mf_map(comsf_avignon, 
        var = "Q218", 
