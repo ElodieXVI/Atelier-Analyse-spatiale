@@ -83,8 +83,6 @@ Quelques fonctions utiles
 ```{r explor}
 # Contrôler la présence de valeurs manquantes dans une variable par communes ménages monoparentaux
 table(is.na(disp_avignon_mono$TYM5D118))
-
-#Pour l'ensemble
 table(is.na(disp_avignon_ens$Q118))
 
 # Connaitre le résumé statistique
@@ -142,7 +140,6 @@ Principales villes de l'unité urbaine en nombre d'habitants : Avignon, Carpentr
 Principales voies d'accès à l'unité urbaine d'Avignon : aéroport d'Avignon-Provence, TGV d'Avignon, A7 (autoroute du soleil)
 Le Rhône.
 PNR : au sud de l'unité urbaine : 2 PNR Alpilles et Lubéron.
-
 
 ```{r map2}
 carte_uu <- left_join(carte_uu, disp_avignon_ens, by="CODGEO")

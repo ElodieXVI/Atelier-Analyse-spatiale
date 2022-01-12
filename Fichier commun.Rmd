@@ -2,12 +2,13 @@
 title: "Fichier Global"
 author: "Groupe Avignon"
 date: "1/11/2022"
-output: 
-  html: default
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
 library(readxl)
 library(dplyr)
 library(ggplot2)
@@ -19,6 +20,10 @@ disp <- read.csv("Data/FILO2018_DISP_COM.csv", sep = ";")
 pvr <- read.csv("Data/FILO2018_DISP_Pauvres_COM.csv", sep = ";")
 # Table des déciles revenu
 dec <- read.csv("Data/FILO2018_TRDECILES_DISP_COM.csv", sep = ";")
+
+# Table des dec com
+dec_com <- read.csv("Data/FILO2018_DEC_COM.csv", sep = ";")
+
 # Table de la composition communale des unités urbaines
 uu <- read_excel("Data/UU2020_au_01-01-2021.xlsx", sheet = 2, skip = 5)
 
@@ -38,6 +43,12 @@ pvr_avignon <- pvr %>%
 dec_avignon <- dec %>% 
   filter(CODGEO %in% uu_avignon$CODGEO)
 
+#FIltrage table dec com
+dec_com_avignon <- dec_com %>% 
+  filter(CODGEO %in% uu_avignon$CODGEO)
+dec_com_avignon_mono <- dec_com_avignon %>% 
+    select(CODGEO, contains("TYM5"))
+
 # sélection des variables décrivant les ménages monoparentaux
 disp_avignon_mono <- disp_avignon %>% 
     select(CODGEO, contains("TYM5"))
@@ -45,12 +56,14 @@ disp_avignon_mono <- disp_avignon %>%
 disp_avignon_ens <- disp_avignon %>% 
   select(1:30)
 
+#Vérification des NA 
+table(is.na(disp_avignon_mono$TYM5D118))
+table(is.na(disp_avignon_ens$Q118))
+
 ```
 
-
-
-## Sujet : Les revenus des familles monoparentales
-- Comparer les familles monoparentales par rapport aux autres catégories de famille et par rapport à l'ensemble de la population : est-ce qu'il y a plus d'inégalités entre les familles monoparentales qu'entre les autres ?
+# Sujet : Les revenus des familles monoparentales
+- Comparer les familles monoparentales par rapport aux autres catégories de famille et par rapport à l'ensemble de la population : est-ce qu'il y a plus d'inégalités entre les familles monoparentales qu'entre les autres ? Où est-ce que les familles monoparentales s'installent en fonction de leur revenus ?
 - Échelle de la commune intéressant quand on est à l'échelle de l'unité urbaine : distribution des familles monoparentales dans la commune centre par rapport à la commune périphérique.
 
 *Variables :* les variables générales : 30 première colonnes, tous les TYMC5. 
@@ -63,3 +76,98 @@ Principales voies d'accès à l'unité urbaine d'Avignon : aéroport d'Avignon-P
 Le Rhône.
 PNR : au sud de l'unité urbaine : 2 PNR Alpilles et Lubéron.
 
+## Graphiques statistique descriptive
+```{r plot1}
+# Observer la distribution d'une variable
+ggplot(disp_avignon_ens, aes(x=Q218)) + 
+  geom_density()+
+  scale_y_continuous(labels = scales::comma)+ # se débarasser de la notation scientifique
+  # Habiller le graphique
+    ylab("Densité de probabilité")+
+  xlab("Revenu disponible médian")+
+  ggtitle("Graphique 1 - Distribution du revenu médian par commune à Avignon") + 
+  labs(caption ="Source : Filosofi 2018") +
+  theme_bw()
+
+# Graphique rang-taille
+ggplot(disp_avignon_ens, aes(x= reorder(CODGEO, -NBPERS18), y = NBPERS18))+
+  geom_point() +
+  scale_y_log10("Population communale", labels = scales:: comma)+
+  scale_x_discrete("Rang", labels= NULL) + 
+  labs(caption = "Source : Filosofi 2018") +
+  ggtitle("Graphique 2 - Répartition de la population communale") +
+  theme_bw()
+```
+
+```{r 5 grandes villes, echo =FALSE, out.width="60%"}
+principales_villes_5 <- subset(disp_avignon_mono, CODGEO %in% c("84007","84031","84087","84035","84054"))
+
+## Recodage de principales_villes_5$CODGEO en principales_villes_5$commune
+principales_villes_5$commune <- principales_villes_5$CODGEO
+principales_villes_5$commune[principales_villes_5$CODGEO == "84007"] <- "Avignon"
+principales_villes_5$commune[principales_villes_5$CODGEO == "84031"] <- "Carpentras"
+principales_villes_5$commune[principales_villes_5$CODGEO == "84035"] <- "Orange"
+principales_villes_5$commune[principales_villes_5$CODGEO == "84054"] <- "Cavaillon"
+principales_villes_5$commune[principales_villes_5$CODGEO == "84087"] <- "L'isle-sur-la-sorgue"
+
+gg <- ggplot(principales_villes_5) + geom_point(aes(x = TYM5Q3_Q1, y = commune), color = "red", size = 4, alpha = 0.4) + theme_bw() +
+  ggtitle("Graphique 3 - Les écarts inter-quartiles de revenus des familles monoparentales par commune") +
+  ylab("Communes") +
+  xlab("Inter-quartiles des revenus") +
+  theme(legend.position="bottom") +
+  labs(caption = "Source : Filosofi 2020 \n Champ : Communes de l'aire urbaine d'Avignon \n Lecture : A Avignon, l'écart inter-quartile des revenus des familles monoparentales est environ 8400 euros.") 
+  
+gg + scale_x_continuous(limits=c(8000, 11000), breaks = c(8000,9000,10000,11000))
+```
+
+```{r presta}
+ggplot(disp_avignon) + 
+  geom_density(aes(x= TYM5PPSOC18), color = "red")+
+  geom_density(aes(x= PPSOC18), color= "blue")+
+  scale_y_continuous(labels = scales::comma) +
+      ylab("Densité de probabilité") +
+  xlab("Part des prestations sociales dans les revenus des familles monoparentales") +
+  ggtitle("Graphique - Part des prestations sociales dans les revenus des familles monoparentales") +
+  theme(legend.position="bottom") +
+  theme_bw()
+
+```
+
+
+```{r revenu dispo médian}
+g1 <- ggplot(disp_avignon) + 
+  geom_density(aes(x= TYM5Q218), color = "red")+
+  geom_density(aes(x= Q218), color= "blue")+
+  scale_y_continuous(labels = scales::comma)+ # se débarrasser de la notation scientifique
+  # Habiller le graphique
+      ylab("Densité de probabilité")+
+  xlab("Revenus médians")+
+  ggtitle("Graphique - Médiane du revenus disponibles des familles monoparentales et de la population générale") +
+  theme_bw() + 
+  scale_x_continuous(limits=c(15000, 25000), breaks = c(15000,16000,17000,18000, 19000, 20000,21000,22000,23000,24000, 25000))
+```
+
+```{r dispo imposé}
+Q218 <- select(disp_avignon, "CODGEO", "Q218", "TYM5Q218")
+Q218 <- rename(Q218, revenu = Q218)
+Q218 <- rename(Q218, revenu_mono = TYM5Q218)
+
+Q2182 <- select(dec_com_avignon, "CODGEO","Q218", "TYM5Q218")
+
+total <- left_join(Q218, Q2182, by="CODGEO")
+
+p1 <- ggplot(total) +
+  geom_density(aes(x= revenu_mono), color = "red")+
+  geom_density(aes(x= revenu), color= "blue") +
+  geom_density(aes(x= TYM5Q218), color = "red", linetype = "dashed")+
+  geom_density(aes(x= Q218), color= "blue", linetype = "dashed") +
+    scale_y_continuous(labels = scales::comma) +
+  ylab("Densité de probabilité")+
+  xlab("Revenu disponible médian")+
+  ggtitle("Graphique - Distribution du revenu médian par commune à Avignon pour les familles monoparentales et les autres types de familles") +
+  theme_bw() + 
+  scale_x_continuous(limits=c(13000, 26000), breaks = c(14000,15000,16000,17000,18000, 19000, 20000,21000,22000,23000,24000, 25000, 26000))
+
+library(patchwork)
+(p1|g1)
+```

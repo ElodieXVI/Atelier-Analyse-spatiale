@@ -127,10 +127,6 @@ gg <- ggplot(principales_villes_5) + geom_point(aes(x = TYM5Q3_Q1, y = commune),
   labs(caption = "Source : Filosofi 2020 \n Champ : Communes de l'aire urbaine d'Avignon \n Lecture : A Avignon, l'écart inter-quartile des revenus des familles monoparentales est environ 8400 euros.") 
   
 gg + scale_x_continuous(limits=c(8000, 11000), breaks = c(8000,9000,10000,11000))
-  
-
-
-
 ```
 
 
