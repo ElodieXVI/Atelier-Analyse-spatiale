@@ -12,6 +12,7 @@ knitr::opts_chunk$set(warning = FALSE)
 library(readxl)
 library(dplyr)
 library(ggplot2)
+library(patchwork)
 setwd("/Users/elodie/Dropbox/QESS2/Cartographie/Atelier-Analyse-spatiale")
 
 # Table de la distribution des revenus 
@@ -79,7 +80,7 @@ PNR : au sud de l'unité urbaine : 2 PNR Alpilles et Lubéron.
 ## Graphiques statistique descriptive
 ```{r plot1}
 # Observer la distribution d'une variable
-ggplot(disp_avignon_ens, aes(x=Q218)) + 
+g1 <- ggplot(disp_avignon_ens, aes(x=Q218)) + 
   geom_density()+
   scale_y_continuous(labels = scales::comma)+ # se débarasser de la notation scientifique
   # Habiller le graphique
@@ -90,13 +91,15 @@ ggplot(disp_avignon_ens, aes(x=Q218)) +
   theme_bw()
 
 # Graphique rang-taille
-ggplot(disp_avignon_ens, aes(x= reorder(CODGEO, -NBPERS18), y = NBPERS18))+
+g2 <- ggplot(disp_avignon_ens, aes(x= reorder(CODGEO, -NBPERS18), y = NBPERS18))+
   geom_point() +
   scale_y_log10("Population communale", labels = scales:: comma)+
   scale_x_discrete("Rang", labels= NULL) + 
   labs(caption = "Source : Filosofi 2018") +
   ggtitle("Graphique 2 - Répartition de la population communale") +
   theme_bw()
+
+(g1|g2)
 ```
 
 ```{r 5 grandes villes, echo =FALSE, out.width="60%"}
@@ -121,7 +124,7 @@ gg + scale_x_continuous(limits=c(8000, 11000), breaks = c(8000,9000,10000,11000)
 ```
 
 ```{r presta}
-ggplot(disp_avignon) + 
+p1 <- ggplot(disp_avignon) + 
   geom_density(aes(x= TYM5PPSOC18), color = "red")+
   geom_density(aes(x= PPSOC18), color= "blue")+
   scale_y_continuous(labels = scales::comma) +
@@ -130,12 +133,11 @@ ggplot(disp_avignon) +
   ggtitle("Graphique - Part des prestations sociales dans les revenus des familles monoparentales") +
   theme(legend.position="bottom") +
   theme_bw()
-
 ```
 
 
 ```{r revenu dispo médian}
-g1 <- ggplot(disp_avignon) + 
+p2 <- ggplot(disp_avignon) + 
   geom_density(aes(x= TYM5Q218), color = "red")+
   geom_density(aes(x= Q218), color= "blue")+
   scale_y_continuous(labels = scales::comma)+ # se débarrasser de la notation scientifique
@@ -145,6 +147,8 @@ g1 <- ggplot(disp_avignon) +
   ggtitle("Graphique - Médiane du revenus disponibles des familles monoparentales et de la population générale") +
   theme_bw() + 
   scale_x_continuous(limits=c(15000, 25000), breaks = c(15000,16000,17000,18000, 19000, 20000,21000,22000,23000,24000, 25000))
+
+(p1|p2)
 ```
 
 ```{r dispo imposé}
@@ -156,7 +160,7 @@ Q2182 <- select(dec_com_avignon, "CODGEO","Q218", "TYM5Q218")
 
 total <- left_join(Q218, Q2182, by="CODGEO")
 
-p1 <- ggplot(total) +
+ggplot(total) +
   geom_density(aes(x= revenu_mono), color = "red")+
   geom_density(aes(x= revenu), color= "blue") +
   geom_density(aes(x= TYM5Q218), color = "red", linetype = "dashed")+
@@ -167,7 +171,4 @@ p1 <- ggplot(total) +
   ggtitle("Graphique - Distribution du revenu médian par commune à Avignon pour les familles monoparentales et les autres types de familles") +
   theme_bw() + 
   scale_x_continuous(limits=c(13000, 26000), breaks = c(14000,15000,16000,17000,18000, 19000, 20000,21000,22000,23000,24000, 25000, 26000))
-
-library(patchwork)
-(p1|g1)
 ```
