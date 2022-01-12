@@ -179,7 +179,7 @@ mf_label( topbot,
           overlap = FALSE,
           lines = FALSE,
           halo=FALSE)
-mf_layout(title = "Le potentiel de revenu dans l'unité urbaine de Paris (2018)",
+mf_layout(title = "Le potentiel de revenu dans l'unité urbaine de Avignon (2018)",
     credits = "Auteur: R. Leconte, 2022. Données: INSEE, Filosofi, 2018",
     arrow = FALSE)
 ```
