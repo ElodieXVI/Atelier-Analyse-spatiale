@@ -396,6 +396,17 @@ mean(qloc$QLTP60,na.rm = T )
 # ajout du quotient de localisation à l'objet sf
 comsf_avignon <- left_join(comsf_avignon, qloc, by = "CODGEO")
 # cartographie du quotient
-mf_map(comsf_avignon, var = "QLTP60", type = "choro", breaks = c(0.6, 0.76, 1.08, 2.18), pal = viridis(3), border = "grey50", leg_title = "Quotient de localisation")
+mf_map(comsf_avignon, var = "QLTP60", type = "choro", breaks = c(0.6, 0.76, 1.08, 2.18),        pal =  hcl.colors(3, "teal", rev = TRUE), border = "grey50", leg_title = "Quotient de localisation")
+mf_label( topbot, 
+          var = "nom",
+          cex = 0.5,
+          col = "black",
+          overlap = FALSE,
+          lines = TRUE,
+          halo=FALSE)
+mf_layout(title = "Carte du quotien de localisation de la pauvreté dans l'unité urbaine d'Avignon (2018)",
+    credits = "Données: INSEE, Filosofi, 2018",
+    arrow = FALSE)
+ mf_theme("default")
 ```
 
