@@ -1,4 +1,4 @@
-Fichier Global
+Sélection des graphiques et cartes
 ================
 Groupe Avignon
 13 January 2022
@@ -28,15 +28,11 @@ PNR : au sud de l’unité urbaine : 2 PNR Alpilles et Lubéron.
 
 ## Graphiques statistique descriptive
 
-![](Toutes-les-sorties_files/figure-gfm/plot1-1.png)<!-- -->
+<img src="Sélection_files/figure-gfm/5 grandes villes-1.png" width="60%" />
 
-<img src="Toutes-les-sorties_files/figure-gfm/5 grandes villes-1.png" width="60%" />
+![](Sélection_files/figure-gfm/presta-1.png)<!-- -->
 
-![](Toutes-les-sorties_files/figure-gfm/presta-1.png)<!-- -->
-
-![](Toutes-les-sorties_files/figure-gfm/revenu%20dispo%20médian-1.png)<!-- -->
-
-![](Toutes-les-sorties_files/figure-gfm/dispo%20imposé-1.png)<!-- -->![](Toutes-les-sorties_files/figure-gfm/dispo%20imposé-2.png)<!-- -->
+![](Sélection_files/figure-gfm/revenu%20dispo%20médian-1.png)<!-- -->
 
 # Cartes
 
@@ -85,23 +81,14 @@ PNR : au sud de l’unité urbaine : 2 PNR Alpilles et Lubéron.
     ##             ANGLEUNIT["degree",0.0174532925199433]],
     ##     ID["EPSG",4326]]
 
-![](Toutes-les-sorties_files/figure-gfm/ratio-1.png)<!-- -->
+![](Sélection_files/figure-gfm/cartopretty2-1.png)<!-- -->
 
-![](Toutes-les-sorties_files/figure-gfm/stock-1.png)<!-- -->
-
-![](Toutes-les-sorties_files/figure-gfm/cartopretty-1.png)<!-- -->
-
-![](Toutes-les-sorties_files/figure-gfm/cartopretty2-1.png)<!-- -->
-
-![](Toutes-les-sorties_files/figure-gfm/carto%20clust-1.png)<!-- -->
+![](Sélection_files/figure-gfm/carto%20clust-1.png)<!-- -->
 
     ## [1] 14.71429
 
-![](Toutes-les-sorties_files/figure-gfm/qloc-1.png)<!-- -->
+![](Sélection_files/figure-gfm/qloc-1.png)<!-- -->
 
-    ## [1] 1.000291
+![](Sélection_files/figure-gfm/gini-1.png)<!-- -->
 
-![](Toutes-les-sorties_files/figure-gfm/qloc-2.png)<!-- -->
-
-![](Toutes-les-sorties_files/figure-gfm/gini-1.png)<!-- -->
-![](Toutes-les-sorties_files/figure-gfm/gini%20mono-1.png)<!-- -->
+![](Sélection_files/figure-gfm/gini%20mono-1.png)<!-- -->

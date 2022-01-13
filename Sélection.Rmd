@@ -1,5 +1,5 @@
 ---
-title: "Fichier Global"
+title: "Sélection des graphiques et cartes"
 author: "Groupe Avignon"
 date: "`r format(Sys.time(), '%d %B %Y')`"
 output: github_document
@@ -64,27 +64,6 @@ Le Rhône.
 PNR : au sud de l'unité urbaine : 2 PNR Alpilles et Lubéron.
 
 ## Graphiques statistique descriptive
-```{r plot1}
-# Observer la distribution d'une variable
-g1 <- ggplot(disp_avignon_ens, aes(x=Q218)) + 
-  geom_density()+
-  scale_y_continuous(labels = scales::comma)+ # se débarasser de la notation scientifique
-  # Habiller le graphique
-    ylab("Densité de probabilité")+
-  xlab("Revenu disponible médian")+
-  ggtitle("Graphique 1 - Distribution du revenu médian par commune à Avignon") + 
-  labs(caption ="Source : Filosofi 2018") +
-  theme_bw()
-# Graphique rang-taille
-g2 <- ggplot(disp_avignon_ens, aes(x= reorder(CODGEO, -NBPERS18), y = NBPERS18))+
-  geom_point() +
-  scale_y_log10("Population communale", labels = scales:: comma)+
-  scale_x_discrete("Rang", labels= NULL) + 
-  labs(caption = "Source : Filosofi 2018") +
-  ggtitle("Graphique 2 - Répartition de la population communale") +
-  theme_bw()
-(g1|g2)
-```
 
 ```{r 5 grandes villes, echo =FALSE, out.width="60%"}
 principales_villes_5 <- subset(disp_avignon_mono, CODGEO %in% c("84007","84031","84087","84035","84054"))
@@ -131,7 +110,7 @@ ggplot(disp_avignon) +
   scale_x_continuous(limits=c(15000, 25000), breaks = c(15000,16000,17000,18000, 19000, 20000,21000,22000,23000,24000, 25000))
 ```
 
-```{r dispo imposé}
+```{r dispo imposé, include=FALSE}
 Q218 <- select(disp_avignon, "CODGEO", "Q218", "TYM5Q218")
 Q218 <- rename(Q218, revenu = Q218)
 Q218 <- rename(Q218, revenu_mono = TYM5Q218)
@@ -214,7 +193,7 @@ comsf_avignon_mono <- left_join(comsf_avignon_mono, disp_avignon_mono, by = "COD
 comsf_avignon_mono <- st_sf(comsf_avignon_mono)
 ```
 
-```{r ratio}
+```{r ratio, include = FALSE}
 # De l'importance des choix de discrétisation
 mf_map(comsf_avignon, 
        var = "TP6018", 
@@ -229,7 +208,7 @@ mf_layout(title = "La pauvreté dans l'unité urbaine d'Avignon (2018)",
     arrow = FALSE)
 ```
 
-```{r stock}
+```{r stock, include = FALSE}
 mf_map(comsf_avignon, col = "grey80", border = "grey50")
 mf_map(comsf_avignon, 
        var = "NBPERS18", 
@@ -280,7 +259,7 @@ threshold <- 0.95
 disc <- com_borders[com_borders$disc >= quantile(com_borders$disc,threshold),]
 ```
 
-```{r cartopretty}
+```{r cartopretty, include=FALSE}
 # carte
 mf_map(comsf_avignon, 
        var = "Q218", 
@@ -363,7 +342,7 @@ mf_layout(title = "Les discontinuités sociales les plus fortes dans l'unité ur
 mf_map(comsf_avignon_mono, 
        var = "clust", 
        type = "typo", 
-       pal =  hcl.colors(3, "teal", rev = TRUE))
+       pal =  hcl.colors(3, "teal", rev = FALSE))
 mf_label( topbot, 
           var = "nom",
           cex = 0.5,
@@ -377,23 +356,24 @@ mf_layout(title = "Classification des familles monoparentales dans l'unité urba
  mf_theme("default")
 ```
 
+
 ```{r qloc}
 library(spdep) #pour calculs
 library(rgeoda)
 
-mean(pvr_avignon$TP6018, na.rm = T)
 # calcul du quotient de localisation
 qloc <- pvr_avignon %>% 
   select(CODGEO, TP6018) %>% 
   mutate( QLTP60 = TP6018/14.71)
-barplot(qloc$QLTP60)
-mean(qloc$QLTP60,na.rm = T )
 
 # cartographie du quotient de localisation
 # ajout du quotient de localisation à l'objet sf
 comsf_avignon <- left_join(comsf_avignon, qloc, by = "CODGEO")
 # cartographie du quotient
-mf_map(comsf_avignon, var = "QLTP60", type = "choro", breaks = c(0.6, 0.76, 1.08, 2.18),        pal =  hcl.colors(3, "teal", rev = TRUE), border = "grey50", leg_title = "Quotient de localisation")
+mf_map(comsf_avignon, 
+       var = "QLTP60", 
+       type = "choro", 
+       breaks = c(0.6, 0.76, 1.08, 2.18),        pal =  hcl.colors(3, "teal", rev = TRUE), border = "grey50", leg_title = "Quotient de localisation")
 mf_label( topbot, 
           var = "nom",
           cex = 0.5,
@@ -406,7 +386,6 @@ mf_layout(title = "Carte du quotien de localisation de la pauvreté dans l'unit�
     arrow = FALSE)
  mf_theme("default")
 ```
-
 
 ```{r gini}
 mf_map(comsf_avignon, 
@@ -427,9 +406,8 @@ mf_layout(title = "Indice de Gini dans l'unité urbaine d'Avignon (2018)",
  mf_theme("default")
 
 ```
+
 ```{r gini mono}
-
-
 # carte
 mf_map(comsf_avignon_mono, 
        var = "TYM5GI18", 
