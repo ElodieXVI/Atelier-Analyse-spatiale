@@ -65,30 +65,6 @@ res.HCPC<-HCPC(res.PCA,nb.clust=3,consol=TRUE,graph=FALSE)
 
 base_class2$clust <- res.HCPC$data.clust$clust
 
-base_class <- base_class2
-###Ajout de la dernière variable de densité :
-
-ur <- read_excel("Data/grille_densite_2021_agrege.xlsx", sheet = 1)
-ur <- left_join(comsf_avignon, ur, by="CODGEO")
-ur <- st_sf(ur)
-class(ur)
-mf_map(ur)
-mf_map(ur,
-      var = "densite",
-      type = "typo",
-      pal = viridis(3),
-      leg_title = "Communes urbaines et rurales",
-      add= TRUE,
-      border = "white")
-summary(ur$densite)
-
-
-ur2 <- ur %>% 
-  filter(CODGEO %in% uu_avignon$CODGEO)
-
-base_class2$densite <- ur$densite
-
-
 #### Revenus type #
 
 names(disp_avignon)
@@ -118,22 +94,38 @@ write.csv2(data, "Classification_revenus.csv")
 names(disp_avignon_mono)
 #PACT18, PPEN18, PPAT18, PPSOC18
 
-data <- disp_avignon %>% select("CODGEO","TYM5PACT18", "TYM5PPEN18", "TYM5PPAT18", "TYM5PPSOC18")
+data_mono <- disp_avignon %>% select("CODGEO","TYM5PACT18", "TYM5PPEN18", "TYM5PPAT18", "TYM5PPSOC18")
 
-sum(is.na(data)) #68
+sum(is.na(data_mono)) #68
 
-data <- rename(data, activites = TYM5PACT18)
-data <- rename(data, pensions = TYM5PPEN18)
-data <- rename(data, patrimoine = TYM5PPAT18)
-data <- rename(data, prestasoc = TYM5PPSOC18)
-data$CODGEO <- as.factor(data$CODGEO)
-data <- data[-2,]
+data_mono <- rename(data_mono, activites = TYM5PACT18)
+data_mono <- rename(data_mono, pensions = TYM5PPEN18)
+data_mono <- rename(data_mono, patrimoine = TYM5PPAT18)
+data_mono <- rename(data_mono, prestasoc = TYM5PPSOC18)
+data_mono$CODGEO <- as.factor(data_mono$CODGEO)
+data_mono <- data_mono[-2,]
+
+Factoshiny(data_mono)
+res.PCA<-PCA(data_mono,ncp=Inf, scale.unit=FALSE,quali.sup=c(1),graph=FALSE)
+res.HCPC<-HCPC(res.PCA,nb.clust=3,consol=TRUE,graph=FALSE)
+
+data_mono$clust <- res.HCPC$data_mono.clust$clust
+
+write.csv2(data_mono, "Classification_revenus_mono.csv")
+
+### CLassification des familles monoparentales avec tout
+
+data_mono_comp <- left_join(base_class2, data_mono, by="CODGEO")
+data_mono_comp$TYM5PPSOC18 <- NULL
+data_mono_comp$TYM5GI18 <- NULL
+
+data_mono_comp$gini <- disp_avignon_mono$TYM5GI18
+data_mono_comp$gini <- as.character(data_mono_comp$gini)
+
+data_mono_comp <- data_mono_comp %>% drop_na()
+
+Factoshiny(data_mono_comp)
 
 
-Factoshiny(data)
-res.PCA<-PCA(data,ncp=Inf, scale.unit=FALSE,quali.sup=c(1),graph=FALSE)
-res.HCPC<-HCPC(res.PCA,nb.clust=4,consol=TRUE,graph=FALSE)
 
-data$clust <- res.HCPC$data.clust$clust
 
-write.csv2(data, "Classification_revenus.csv")

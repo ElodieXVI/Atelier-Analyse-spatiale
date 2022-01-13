@@ -187,17 +187,18 @@ library(tidyverse)
 ```{r prep, messages = FALSE, warning=FALSE}
 # charger la géométrie avec sf
 comsf <- st_read(dsn = "/Users/elodie/Dropbox/QESS2/Cartographie/communes-20220101-shp/communes-20220101.shp", stringsAsFactors = F)
+
 # filtrer comme un data frame
 comsf_avignon <- comsf %>% 
   filter(insee %in% uu_avignon$CODGEO) %>% 
   rename(CODGEO = insee)
 comsf_avignon_mono <- comsf_avignon %>% 
     select(CODGEO, contains("TYM5"))
-# interroger le système de coordoonées 
-st_crs(comsf_avignon)
 # projeter le fond de carte dans le référentiel Lambert93 (adapté pour la France)
 comsf_avignon <- st_transform(comsf_avignon, crs = 2154)
 # joindre les données attributaires
+ur <- read_excel("Data/grille_densite_2021_agrege.xlsx", sheet = 1)
+comsf_avignon$densite <- ur$densite
 comsf_avignon <- left_join(comsf_avignon, pvr_avignon, by = "CODGEO")
 comsf_avignon <- left_join(comsf_avignon, disp_avignon, by = "CODGEO")
 # sinon, réassigner
@@ -451,10 +452,6 @@ mf_layout(title = "Indice de Gini dans l'unité urbaine d'Avignon familles monop
 
 
 ```{r grille densité}
-ur <- read_excel("Data/grille_densite_2021_agrege.xlsx", sheet = 1)
-
-
-comsf_avignon$densite <- ur$densite
 ur <- left_join(comsf_avignon, ur, by="CODGEO")
 ur <- st_sf(ur)
 class(ur)
@@ -466,5 +463,4 @@ mf_map(ur,
       leg_title = "Communes urbaines et rurales",
       add= TRUE,
       border = "white")
-summary(ur$densite)
 ```
