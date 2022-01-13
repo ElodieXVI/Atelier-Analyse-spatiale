@@ -168,8 +168,6 @@ ggplot(total) +
 ```
 
 ```{r classification}
-#Voir fichier classification.r : ici je charge la base enregistrée avec la classification et je l'ajoute en var sup à disp_avignon_mono
-
 ### Essai de classification des familles monoparentales 
 library(FactoMineR)
 library(Factoshiny)
@@ -381,7 +379,7 @@ mf_layout(title = "Les discontinuités sociales les plus fortes dans l'unité ur
 
 ```{r carto clust}
 # carte
-mf_map(comsf_avignon, 
+mf_map(comsf_avignon_mono, 
        var = "clust", 
        type = "typo", 
        breaks = 3,
