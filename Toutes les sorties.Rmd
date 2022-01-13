@@ -2,8 +2,7 @@
 title: "Fichier Global"
 author: "Groupe Avignon"
 date: "1/11/2022"
-output: 
-  html_document: default
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
@@ -168,30 +167,16 @@ ggplot(total) +
 ```
 
 ```{r classification}
-### Essai de classification des familles monoparentales 
-library(FactoMineR)
-library(Factoshiny)
-library(tidyverse)
+#Voir fichier r classification 
+library(readr)
+base_class <- read_delim("classification.csv", 
+    delim = ";", escape_double = FALSE, trim_ws = TRUE)
+disp_avignon_mono$clust <- base_class$clust
 
-#revenus médians disponibles, CODGEO, 
-#codgeo, revenus médians déclarés, part des prestations, taux de pauvreté de la commune
-
-pauvre <- select(pvr_avignon, "CODGEO", "TP6018")
-base_class <- select(total, "CODGEO","TYM5Q218")
-ajout <- select(disp_avignon_mono, "CODGEO","TYM5PPSOC18")
-base_class <- left_join(base_class, ajout, by="CODGEO")
-base_class <- left_join(base_class, pauvre, by="CODGEO")
-
-res.PCA<-PCA(base_class,ncp=Inf, scale.unit=FALSE,quali.sup=c(1),graph=FALSE)
-res.HCPC<-HCPC(res.PCA,nb.clust=3,consol=TRUE,graph=FALSE)
-
-plot.HCPC(res.HCPC,choice='tree',title='Arbre hiérarchique')
-
-disp_avignon_mono$clust <- res.HCPC$data.clust$clust
 ```
 
 # Cartes
-```{r pkg}
+```{r pkg, messages = FALSE, warning=FALSE}
 library(sf)
 library(mapview)
 library(mapsf)
@@ -375,17 +360,12 @@ mf_layout(title = "Les discontinuités sociales les plus fortes dans l'unité ur
  mf_theme("default")
 ```
 
-
-
 ```{r carto clust}
 # carte
 mf_map(comsf_avignon_mono, 
        var = "clust", 
        type = "typo", 
-       breaks = 3,
-       pal =  viridis(3), 
-       border = NA, 
-       leg_title = "Revenu médian\n(discrétisation Q6)")
+       pal =  hcl.colors(3, "teal", rev = TRUE))
 mf_label( topbot, 
           var = "nom",
           cex = 0.5,
@@ -393,7 +373,7 @@ mf_label( topbot,
           overlap = FALSE,
           lines = TRUE,
           halo=FALSE)
-mf_layout(title = "Les discontinuités sociales les plus fortes dans l'unité urbaine d'Avignon familles mono(2018)",
+mf_layout(title = "Classification des familles monoparentales dans l'unité urbaine d'Avignon (2018)",
     credits = "Données: INSEE, Filosofi, 2018",
     arrow = FALSE)
  mf_theme("default")
