@@ -5,7 +5,7 @@ date: "`r format(Sys.time(), '%d %B %Y')`"
 output: github_document
 ---
 
-```{r setup, include=FALSE}
+```{r setup}
 knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_chunk$set(message = FALSE)
 knitr::opts_chunk$set(warning = FALSE)
@@ -110,41 +110,6 @@ ggplot(disp_avignon) +
   scale_x_continuous(limits=c(15000, 25000), breaks = c(15000,16000,17000,18000, 19000, 20000,21000,22000,23000,24000, 25000))
 ```
 
-```{r dispo imposé, include=FALSE}
-Q218 <- select(disp_avignon, "CODGEO", "Q218", "TYM5Q218")
-Q218 <- rename(Q218, revenu = Q218)
-Q218 <- rename(Q218, revenu_mono = TYM5Q218)
-Q2182 <- select(dec_com_avignon, "CODGEO","Q218", "TYM5Q218")
-total <- left_join(Q218, Q2182, by="CODGEO")
-ggplot(total) +
-  geom_density(aes(x= revenu_mono), color = "red")+
-  geom_density(aes(x= revenu), color= "blue") +
-  geom_density(aes(x= TYM5Q218), color = "red", linetype = "dashed")+
-  geom_density(aes(x= Q218), color= "blue", linetype = "dashed") +
-    scale_y_continuous(labels = scales::comma) +
-  ylab("Densité de probabilité")+
-  xlab("Revenu disponible médian")+
-  ggtitle("Graphique - Distribution du revenu médian par commune à Avignon pour les familles monoparentales et les autres types de familles") +
-  theme_bw() + 
-  scale_x_continuous(limits=c(13000, 26000), breaks = c(14000,15000,16000,17000,18000, 19000, 20000,21000,22000,23000,24000, 25000, 26000))
-ens_disp <- select(disp, "CODGEO", "Q218", "TYM5Q218")
-ens_dec <- select(dec_com, "CODGEO", "Q218", "TYM5Q218")
-ens_disp <- rename(ens_disp, revenu_ens = Q218)
-ens_disp <- rename(ens_disp, revenu_mono_ens = TYM5Q218)
-total <- left_join(ens_disp, ens_dec, by="CODGEO")
-ggplot(total) +
-  geom_density(aes(x= revenu_mono_ens), color = "red")+
-  geom_density(aes(x= revenu_ens), color= "blue") +
-  geom_density(aes(x= TYM5Q218), color = "red", linetype = "dashed")+
-  geom_density(aes(x= Q218), color= "blue", linetype = "dashed") +
-    scale_y_continuous(labels = scales::comma) +
-  ylab("Densité de probabilité")+
-  xlab("Revenu disponible médian")+
-  ggtitle("Graphique - Distribution du revenu médian par commune en France pour les familles monoparentales et les autres types de familles") +
-  theme_bw() + 
-  scale_x_continuous(limits=c(13000, 26000), breaks = c(14000,15000,16000,17000,18000, 19000, 20000,21000,22000,23000,24000, 25000, 26000))
-```
-
 ```{r classification, message=FALSE,warning=FALSE}
 #Voir fichier r classification 
 library(readr)
@@ -152,9 +117,15 @@ base_class <- read_delim("classification.csv",
     delim = ";", escape_double = FALSE, trim_ws = TRUE)
 
 base <- base_class %>% select("CODGEO", "clust")
-
-
+base$CODGEO <- as.character(base$CODGEO)
 disp_avignon_mono <- left_join(disp_avignon_mono, base, by = "CODGEO")
+
+class_rev <- read_delim("Classification_revenus.csv", 
+    delim = ";", escape_double = FALSE, trim_ws = TRUE)
+class_rev <- class_rev %>% select("CODGEO", "clust")
+class_rev <- rename(class_rev, clust_rev = clust)
+class_rev$CODGEO <- as.character(class_rev$CODGEO)
+disp_avignon <- left_join(disp_avignon, class_rev, by = "CODGEO")
 
 ```
 
@@ -197,7 +168,7 @@ comsf_avignon_mono <- left_join(comsf_avignon_mono, disp_avignon_mono, by = "COD
 comsf_avignon_mono <- st_sf(comsf_avignon_mono)
 ```
 
-```{r ratio, include = FALSE}
+```{r ratio}
 # De l'importance des choix de discrétisation
 mf_map(comsf_avignon, 
        var = "TP6018", 
@@ -229,7 +200,6 @@ mf_layout(title = "Populations communales de l'unité urbaine d'Avignon (2018)",
 ```
 
 ```{r disc, message=FALSE,warning=FALSE}
-library(mapsf)
 library(maptiles)
 library(potential)
 # sélection des labels à ploter
@@ -261,32 +231,6 @@ com_borders$disc <- com_borders$Q218.x / com_borders$Q218.y
 # on ne conserve que les 5% des discontinuités les plus fortes
 threshold <- 0.95
 disc <- com_borders[com_borders$disc >= quantile(com_borders$disc,threshold),]
-```
-
-```{r cartopretty, include=FALSE}
-# carte
-mf_map(comsf_avignon, 
-       var = "Q218", 
-       type = "choro", 
-       breaks = "q6",
-       pal =  hcl.colors(6, "teal", rev = TRUE), 
-       border = NA, 
-       leg_title = "Revenu médian\n(discrétisation Q6)")
-mf_map(x = disc,
-       col = "red",
-       lwd = 3,
-       add = TRUE)
-mf_label( topbot, 
-          var = "nom",
-          cex = 0.5,
-          col = "black",
-          overlap = FALSE,
-          lines = TRUE,
-          halo=FALSE)
-mf_layout(title = "Les discontinuités sociales les plus fortes dans l'unité urbaine d'Avignon (2018)",
-    credits = "Auteur: R. Leconte, 2022. Données: INSEE, Filosofi, 2018",
-    arrow = FALSE)
- mf_theme("default")
 ```
 
 
@@ -359,7 +303,26 @@ mf_layout(title = "Classification des familles monoparentales dans l'unité urba
     arrow = FALSE)
  mf_theme("default")
 ```
-
+```{r carto clust revenus}
+# carte
+mf_map(comsf_avignon, 
+       var = "clust_rev", 
+       type = "typo", 
+       pal =  viridis(4))
+mf_label( topbot, 
+          var = "nom",
+          cex = 0.5,
+          col = "black",
+          overlap = FALSE,
+          lines = TRUE,
+          halo=FALSE)
+mf_layout(title = "Classification des parts de revenus dans l'unité urbaine d'Avignon (2018)",
+    credits = "Données: INSEE, Filosofi, 2018",
+    arrow = FALSE)
+ mf_theme("default")
+ 
+ knitr::include_graphics("images/Classification_rev.png")
+```
 
 ```{r qloc}
 library(spdep) #pour calculs

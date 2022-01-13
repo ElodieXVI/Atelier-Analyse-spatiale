@@ -4,6 +4,12 @@ library(FactoMineR)
 library(Factoshiny)
 library(tidyverse)
 
+Q218 <- select(disp_avignon, "CODGEO", "Q218", "TYM5Q218")
+Q218 <- rename(Q218, revenu = Q218)
+Q218 <- rename(Q218, revenu_mono = TYM5Q218)
+Q2182 <- select(dec_com_avignon, "CODGEO","Q218", "TYM5Q218")
+total <- left_join(Q218, Q2182, by="CODGEO")
+
 #revenus médians disponibles, CODGEO, 
 #codgeo, revenus médians déclarés, part des prestations, taux de pauvreté de la commune
 
@@ -82,3 +88,52 @@ ur2 <- ur %>%
 
 base_class2$densite <- ur$densite
 
+
+#### Revenus type #
+
+names(disp_avignon)
+#PACT18, PPEN18, PPAT18, PPSOC18
+
+data <- disp_avignon %>% select("CODGEO","PACT18", "PPEN18", "PPAT18", "PPSOC18") 
+
+sum(is.na(data)) #68
+
+data <- rename(data, activites = PACT18)
+data <- rename(data, pensions = PPEN18)
+data <- rename(data, patrimoine = PPAT18)
+data <- rename(data, prestasoc = PPSOC18)
+
+
+Factoshiny(data)
+res.PCA<-PCA(data,ncp=Inf, scale.unit=FALSE,quali.sup=c(1),graph=FALSE)
+res.HCPC<-HCPC(res.PCA,nb.clust=4,consol=TRUE,graph=FALSE)
+
+data$clust <- res.HCPC$data.clust$clust
+
+write.csv2(data, "Classification_revenus.csv")
+
+
+#### Revenus type mono#
+
+names(disp_avignon_mono)
+#PACT18, PPEN18, PPAT18, PPSOC18
+
+data <- disp_avignon %>% select("CODGEO","TYM5PACT18", "TYM5PPEN18", "TYM5PPAT18", "TYM5PPSOC18")
+
+sum(is.na(data)) #68
+
+data <- rename(data, activites = TYM5PACT18)
+data <- rename(data, pensions = TYM5PPEN18)
+data <- rename(data, patrimoine = TYM5PPAT18)
+data <- rename(data, prestasoc = TYM5PPSOC18)
+data$CODGEO <- as.factor(data$CODGEO)
+data <- data[-2,]
+
+
+Factoshiny(data)
+res.PCA<-PCA(data,ncp=Inf, scale.unit=FALSE,quali.sup=c(1),graph=FALSE)
+res.HCPC<-HCPC(res.PCA,nb.clust=4,consol=TRUE,graph=FALSE)
+
+data$clust <- res.HCPC$data.clust$clust
+
+write.csv2(data, "Classification_revenus.csv")
