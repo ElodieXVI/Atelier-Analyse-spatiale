@@ -1,7 +1,7 @@
 ---
 title: "Fichier Global"
 author: "Groupe Avignon"
-date: "1/11/2022"
+date: "`r format(Sys.time(), '%d %B %Y')`"
 output: github_document
 ---
 
@@ -378,3 +378,24 @@ mf_layout(title = "Classification des familles monoparentales dans l'unité urba
     arrow = FALSE)
  mf_theme("default")
 ```
+
+
+```{r qloc}
+library(spdep) #pour calculs
+library(rgeoda)
+
+mean(pvr_avignon$TP6018, na.rm = T)
+# calcul du quotient de localisation
+qloc <- pvr_avignon %>% 
+  select(CODGEO, TP6018) %>% 
+  mutate( QLTP60 = TP6018/14.71)
+barplot(qloc$QLTP60)
+mean(qloc$QLTP60,na.rm = T )
+
+# cartographie du quotient de localisation
+# ajout du quotient de localisation à l'objet sf
+comsf_avignon <- left_join(comsf_avignon, qloc, by = "CODGEO")
+# cartographie du quotient
+mf_map(comsf_avignon, var = "QLTP60", type = "choro", breaks = c(0.6, 0.76, 1.08, 2.18), pal = viridis(3), border = "grey50", leg_title = "Quotient de localisation")
+```
+

@@ -1,7 +1,7 @@
 Fichier Global
 ================
 Groupe Avignon
-1/11/2022
+13 January 2022
 
 # Sujet : Les revenus des familles monoparentales
 
@@ -94,3 +94,11 @@ PNR : au sud de l’unité urbaine : 2 PNR Alpilles et Lubéron.
 ![](Toutes-les-sorties_files/figure-gfm/cartopretty2-1.png)<!-- -->
 
 ![](Toutes-les-sorties_files/figure-gfm/carto%20clust-1.png)<!-- -->
+
+    ## [1] 14.71429
+
+![](Toutes-les-sorties_files/figure-gfm/qloc-1.png)<!-- -->
+
+    ## [1] 1.000291
+
+![](Toutes-les-sorties_files/figure-gfm/qloc-2.png)<!-- -->
