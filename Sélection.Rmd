@@ -145,12 +145,16 @@ ggplot(total) +
   scale_x_continuous(limits=c(13000, 26000), breaks = c(14000,15000,16000,17000,18000, 19000, 20000,21000,22000,23000,24000, 25000, 26000))
 ```
 
-```{r classification}
+```{r classification, message=FALSE,warning=FALSE}
 #Voir fichier r classification 
 library(readr)
 base_class <- read_delim("classification.csv", 
     delim = ";", escape_double = FALSE, trim_ws = TRUE)
-disp_avignon_mono$clust <- base_class$clust
+
+base <- base_class %>% select("CODGEO", "clust")
+
+
+disp_avignon_mono <- left_join(disp_avignon_mono, base, by = "CODGEO")
 
 ```
 
@@ -224,7 +228,7 @@ mf_layout(title = "Populations communales de l'unité urbaine d'Avignon (2018)",
     arrow = FALSE)
 ```
 
-```{r disc}
+```{r disc, message=FALSE,warning=FALSE}
 library(mapsf)
 library(maptiles)
 library(potential)
@@ -286,7 +290,7 @@ mf_layout(title = "Les discontinuités sociales les plus fortes dans l'unité ur
 ```
 
 
-```{r disc mono}
+```{r disc mono, message=FALSE,warning=FALSE}
 # Auto-intersection des communes (avec buffer, en mètres)
 com_borders  <- st_intersection(st_buffer(comsf_avignon_mono, 10), st_buffer(comsf_avignon_mono, 10)) 
 # Transformation des géométries en 'MULTILINESTRING'
@@ -342,7 +346,7 @@ mf_layout(title = "Les discontinuités sociales les plus fortes dans l'unité ur
 mf_map(comsf_avignon_mono, 
        var = "clust", 
        type = "typo", 
-       pal =  hcl.colors(3, "teal", rev = FALSE))
+       pal =  hcl.colors(3, "teal", rev = TRUE))
 mf_label( topbot, 
           var = "nom",
           cex = 0.5,

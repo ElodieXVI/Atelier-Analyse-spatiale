@@ -448,3 +448,23 @@ mf_layout(title = "Indice de Gini dans l'unité urbaine d'Avignon familles monop
     arrow = FALSE)
  mf_theme("default")
 ```
+
+
+```{r grille densité}
+ur <- read_excel("Data/grille_densite_2021_agrege.xlsx", sheet = 1)
+
+
+comsf_avignon$densite <- ur$densite
+ur <- left_join(comsf_avignon, ur, by="CODGEO")
+ur <- st_sf(ur)
+class(ur)
+mf_map(ur)
+mf_map(ur,
+      var = "densite",
+      type = "typo",
+      pal = viridis(3),
+      leg_title = "Communes urbaines et rurales",
+      add= TRUE,
+      border = "white")
+summary(ur$densite)
+```

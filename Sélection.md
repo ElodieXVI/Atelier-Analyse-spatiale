@@ -85,8 +85,6 @@ PNR : au sud de l’unité urbaine : 2 PNR Alpilles et Lubéron.
 
 ![](Sélection_files/figure-gfm/carto%20clust-1.png)<!-- -->
 
-    ## [1] 14.71429
-
 ![](Sélection_files/figure-gfm/qloc-1.png)<!-- -->
 
 ![](Sélection_files/figure-gfm/gini-1.png)<!-- -->

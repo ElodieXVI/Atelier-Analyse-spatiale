@@ -23,3 +23,62 @@ plot.HCPC(res.HCPC,choice='tree',title='Arbre hiérarchique')
 base_class$clust <- res.HCPC$data.clust$clust
 
 write.csv2(base_class, "classification.csv")
+
+### Suite :
+
+names(base_class)
+ajout <- select(disp_avignon_mono, "CODGEO","TYM5GI18", "TYM5Q3_Q1")
+base_class2 <- left_join(base_class, ajout, by="CODGEO")
+
+names(base_class2)
+
+## Recodage de base_class2$TYM5GI18 en base_class2$TYM5GI18
+base_class2$TYM5GI18 <- cut(base_class2$TYM5GI18,
+  include.lowest = FALSE,
+  right = FALSE,
+  dig.lab = 4,
+  breaks = c(0.226, 0.254, 0.265, 0.278, 0.46))
+
+## Recodage de base_class2$TYM5GI18
+base_class2$TYM5GI18 <- fct_recode(base_class2$TYM5GI18,
+  "1" = "[0.226,0.254)",
+  "2" = "[0.254,0.265)",
+  "3" = "[0.265,0.278)",
+  "4" = "[0.278,0.46)")
+
+ur <- read_excel("Data/grille_densite_2021_agrege.xlsx", sheet = 1)
+ur2 <- ur %>% 
+  filter(CODGEO %in% uu_avignon$CODGEO)
+base_class2$densite <- ur2$densite
+
+base_class2 <- base_class2 %>% drop_na()
+
+Factoshiny(base_class2)
+res.PCA<-PCA(base_class2,ncp=Inf, scale.unit=FALSE,quali.sup=c(1,5),graph=FALSE)
+res.HCPC<-HCPC(res.PCA,nb.clust=3,consol=TRUE,graph=FALSE)
+
+base_class2$clust <- res.HCPC$data.clust$clust
+
+base_class <- base_class2
+###Ajout de la dernière variable de densité :
+
+ur <- read_excel("Data/grille_densite_2021_agrege.xlsx", sheet = 1)
+ur <- left_join(comsf_avignon, ur, by="CODGEO")
+ur <- st_sf(ur)
+class(ur)
+mf_map(ur)
+mf_map(ur,
+      var = "densite",
+      type = "typo",
+      pal = viridis(3),
+      leg_title = "Communes urbaines et rurales",
+      add= TRUE,
+      border = "white")
+summary(ur$densite)
+
+
+ur2 <- ur %>% 
+  filter(CODGEO %in% uu_avignon$CODGEO)
+
+base_class2$densite <- ur$densite
+
