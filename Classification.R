@@ -19,19 +19,6 @@ ajout <- select(disp_avignon_mono, "CODGEO","TYM5PPSOC18")
 base_class <- left_join(base_class, ajout, by="CODGEO")
 base_class <- left_join(base_class, pauvre, by="CODGEO")
 
-Factoshiny(base_class)
-
-res.PCA<-PCA(base_class,ncp=Inf, scale.unit=FALSE,quali.sup=c(1),graph=FALSE)
-res.HCPC<-HCPC(res.PCA,nb.clust=3,consol=TRUE,graph=FALSE)
-
-plot.HCPC(res.HCPC,choice='tree',title='Arbre hiérarchique')
-
-base_class$clust <- res.HCPC$data.clust$clust
-
-write.csv2(base_class, "classification.csv")
-
-### Suite :
-
 names(base_class)
 ajout <- select(disp_avignon_mono, "CODGEO", "TYM5Q3_Q1")
 base_class2 <- left_join(base_class, ajout, by="CODGEO")
@@ -45,6 +32,7 @@ base_class2$densite <- ur2$densite
 Factoshiny(base_class2)
 res.PCA<-PCA(base_class2,ncp=Inf, scale.unit=FALSE,quali.sup=c(1),graph=FALSE)
 res.HCPC<-HCPC(res.PCA,nb.clust=3,consol=TRUE,graph=FALSE)
+plot.HCPC(res.HCPC,choice='tree',title='')
 
 base_class2$clust <- res.HCPC$data.clust$clust
 write.csv2(base_class2, "classification_complete.csv")
@@ -60,6 +48,7 @@ base_ens <- base_ens[-15,]
 Factoshiny(base_ens)
 res.PCA<-PCA(base_ens,ncp=Inf, scale.unit=FALSE,quali.sup=c(1),graph=FALSE)
 res.HCPC<-HCPC(res.PCA,nb.clust=3,consol=TRUE,graph=FALSE)
+plot.HCPC(res.HCPC,choice='tree',title='')
 
 base_ens$clust <- res.HCPC$data.clust$clust
 
@@ -83,6 +72,7 @@ data <- rename(data, prestasoc = PPSOC18)
 Factoshiny(data)
 res.PCA<-PCA(data,ncp=Inf, scale.unit=FALSE,quali.sup=c(1),graph=FALSE)
 res.HCPC<-HCPC(res.PCA,nb.clust=4,consol=TRUE,graph=FALSE)
+plot.HCPC(res.HCPC,choice='tree',title='')
 
 data$clust <- res.HCPC$data.clust$clust
 
@@ -108,6 +98,7 @@ data_mono <- data_mono[-2,]
 Factoshiny(data_mono)
 res.PCA<-PCA(data_mono,ncp=Inf, scale.unit=FALSE,quali.sup=c(1),graph=FALSE)
 res.HCPC<-HCPC(res.PCA,nb.clust=3,consol=TRUE,graph=FALSE)
+plot.HCPC(res.HCPC,choice='tree',title='')
 
 data_mono$clust <- res.HCPC$data_mono.clust$clust
 
