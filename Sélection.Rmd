@@ -146,12 +146,21 @@ class_rev_mono <- read_delim("Classification_revenus_mono.csv",
 class_rev_mono <- class_rev_mono %>% select("CODGEO", "clust")
 class_rev_mono <- rename(class_rev_mono, clust_rev_mono = clust)
 class_rev_mono$CODGEO <- as.character(class_rev_mono$CODGEO)
+
 class_rev_mono$clust_rev_mono <- as_factor(class_rev_mono$clust_rev_mono)
+## Réordonnancement de class_rev_mono$clust_rev_mono
+class_rev_mono$clust_rev_mono <- fct_relevel(
+  class_rev_mono$clust_rev_mono,
+  "2", "3", "4", "1")
+
+
 class_rev_mono$clust_rev_mono <- fct_recode(class_rev_mono$clust_rev_mono,
-  "Classe 1" = "1",
-  "Classe 2" = "2",
-  "Classe 3" = "3",
-  "Classe 4" = "4")
+  "Classe 1" = "2",
+  "Classe 2" = "3",
+  "Classe 3" = "4",
+  "Classe 4" = "1")
+
+
 disp_avignon_mono <- left_join(disp_avignon_mono, class_rev_mono, by = "CODGEO")
 
 ```
