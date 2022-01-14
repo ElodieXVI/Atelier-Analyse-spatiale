@@ -56,7 +56,6 @@ write.csv2(base_ens, "classification_complete_ens.csv")
 
 names(disp_avignon)
 #PACT18, PPEN18, PPAT18, PPSOC18
-pauvre <- select(pvr_avignon, "CODGEO", "TP6018")
 data <- disp_avignon %>% select("CODGEO","PACT18", "PPEN18", "PPAT18", "PPSOC18") 
 
 sum(is.na(data)) #68
@@ -65,7 +64,6 @@ data <- rename(data, activites = PACT18)
 data <- rename(data, pensions = PPEN18)
 data <- rename(data, patrimoine = PPAT18)
 data <- rename(data, prestasoc = PPSOC18)
-
 
 Factoshiny(data)
 res.PCA<-PCA(data,ncp=2,quali.sup=c(1),graph=FALSE)
@@ -78,8 +76,6 @@ write.csv2(data, "Classification_revenus.csv")
 
 
 #### Revenus type mono#
-
-names(disp_avignon_mono)
 #PACT18, PPEN18, PPAT18, PPSOC18
 
 data_mono <- disp_avignon %>% select("CODGEO","TYM5PACT18", "TYM5PPEN18", "TYM5PPAT18", "TYM5PPSOC18")

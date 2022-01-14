@@ -138,8 +138,7 @@ class_rev$clust_rev <- as_factor(class_rev$clust_rev)
 class_rev$clust_rev <- fct_recode(class_rev$clust_rev,
   "Classe 1" = "1",
   "Classe 2" = "2",
-  "Classe 3" = "3",
-  "Classe 4" = "4")
+  "Classe 3" = "3")
 disp_avignon <- left_join(disp_avignon, class_rev, by = "CODGEO")
 
 class_rev_mono <- read_delim("Classification_revenus_mono.csv", 
@@ -292,7 +291,7 @@ mf_layout(title = "Classification des familles monoparentales dans l'unité urba
 mf_map(comsf_avignon, 
        var = "clust_rev", 
        type = "typo", 
-       pal =  viridis(4),
+       pal =  viridis(3),
        leg_title = "Classes :")
 mf_label( topbot, 
           var = "nom",
@@ -312,7 +311,7 @@ mf_layout(title = "Classification de revenus dans l'unité urbaine d'Avignon (20
 mf_map(comsf_avignon_mono, 
        var = "clust_rev_mono", 
        type = "typo", 
-       pal =  viridis(3),
+       pal =  viridis(4),
        leg_title = "Classes :")
 mf_label( topbot, 
           var = "nom",
