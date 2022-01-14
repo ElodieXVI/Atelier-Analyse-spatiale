@@ -33,43 +33,43 @@ write.csv2(base_class, "classification.csv")
 ### Suite :
 
 names(base_class)
-ajout <- select(disp_avignon_mono, "CODGEO","TYM5GI18", "TYM5Q3_Q1")
+ajout <- select(disp_avignon_mono, "CODGEO", "TYM5Q3_Q1")
 base_class2 <- left_join(base_class, ajout, by="CODGEO")
-
-names(base_class2)
-
-## Recodage de base_class2$TYM5GI18 en base_class2$TYM5GI18
-base_class2$TYM5GI18 <- cut(base_class2$TYM5GI18,
-  include.lowest = FALSE,
-  right = FALSE,
-  dig.lab = 4,
-  breaks = c(0.226, 0.254, 0.265, 0.278, 0.46))
-
-## Recodage de base_class2$TYM5GI18
-base_class2$TYM5GI18 <- fct_recode(base_class2$TYM5GI18,
-  "1" = "[0.226,0.254)",
-  "2" = "[0.254,0.265)",
-  "3" = "[0.265,0.278)",
-  "4" = "[0.278,0.46)")
 
 ur <- read_excel("Data/grille_densite_2021_agrege.xlsx", sheet = 1)
 ur2 <- ur %>% 
   filter(CODGEO %in% uu_avignon$CODGEO)
 base_class2$densite <- ur2$densite
 
-base_class2 <- base_class2 %>% drop_na()
 
 Factoshiny(base_class2)
-res.PCA<-PCA(base_class2,ncp=Inf, scale.unit=FALSE,quali.sup=c(1,5),graph=FALSE)
+res.PCA<-PCA(base_class2,ncp=Inf, scale.unit=FALSE,quali.sup=c(1),graph=FALSE)
 res.HCPC<-HCPC(res.PCA,nb.clust=3,consol=TRUE,graph=FALSE)
 
 base_class2$clust <- res.HCPC$data.clust$clust
+write.csv2(base_class2, "classification_complete.csv")
+
+
+### Et pour tout le monde
+pauvre <- select(pvr_avignon, "CODGEO", "TP6018")
+base_ens <- disp_avignon %>% select("CODGEO","Q3_Q1", "PPSOC18", "PPAT18", "PPSOC18") 
+base_ens <- left_join(base_ens, pauvre, by="CODGEO")
+base_ens$densite <- ur2$densite
+base_ens <- base_ens[-15,]
+
+Factoshiny(base_ens)
+res.PCA<-PCA(base_ens,ncp=Inf, scale.unit=FALSE,quali.sup=c(1),graph=FALSE)
+res.HCPC<-HCPC(res.PCA,nb.clust=3,consol=TRUE,graph=FALSE)
+
+base_ens$clust <- res.HCPC$data.clust$clust
+
+write.csv2(base_ens, "classification_complete_ens.csv")
 
 #### Revenus type #
 
 names(disp_avignon)
 #PACT18, PPEN18, PPAT18, PPSOC18
-
+pauvre <- select(pvr_avignon, "CODGEO", "TP6018")
 data <- disp_avignon %>% select("CODGEO","PACT18", "PPEN18", "PPAT18", "PPSOC18") 
 
 sum(is.na(data)) #68

@@ -1,7 +1,7 @@
 Sélection des graphiques et cartes
 ================
 Groupe Avignon
-13 January 2022
+14 January 2022
 
 ``` r
 knitr::opts_chunk$set(echo = FALSE)
@@ -143,7 +143,9 @@ PNR : au sud de l’unité urbaine : 2 PNR Alpilles et Lubéron.
 
 ![](Sélection_files/figure-gfm/cartopretty2-1.png)<!-- -->
 
-![](Sélection_files/figure-gfm/carto%20clust-1.png)<!-- -->
+![](Sélection_files/figure-gfm/carto%20entier-1.png)<!-- --><img src="images/Class_ens.png" width="688" />
+
+![](Sélection_files/figure-gfm/carto%20clust-1.png)<!-- --><img src="images/Class_mono.png" width="626" />
 ![](Sélection_files/figure-gfm/carto%20clust%20revenus-1.png)<!-- --><img src="images/Classification_rev.png" width="862" />
 
 ![](Sélection_files/figure-gfm/carto%20clust%20revenus%20mono-1.png)<!-- --><img src="images/Classification_rev_mono.png" width="836" />

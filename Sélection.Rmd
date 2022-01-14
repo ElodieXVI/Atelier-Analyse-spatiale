@@ -113,12 +113,32 @@ ggplot(disp_avignon) +
 ```{r classification, message=FALSE,warning=FALSE}
 #Voir fichier r classification 
 library(readr)
-base_class <- read_delim("classification.csv", 
+
+base_class <- read_delim("classification_complete.csv", 
     delim = ";", escape_double = FALSE, trim_ws = TRUE)
 
 base <- base_class %>% select("CODGEO", "clust")
 base$CODGEO <- as.character(base$CODGEO)
+base <- rename(base, clust_mono = clust)
+base$clust_mono <- as_factor(base$clust_mono)
+## Recodage de base$clust_mono
+base$clust_mono <- fct_recode(base$clust_mono,
+  "Classe 1" = "1",
+  "Classe 2" = "2",
+  "Classe 3" = "3")
 disp_avignon_mono <- left_join(disp_avignon_mono, base, by = "CODGEO")
+
+base_class_ens <- read_delim("classification_complete_ens.csv", delim = ";", escape_double = FALSE, trim_ws = TRUE)
+base <- base_class_ens %>% select("CODGEO", "clust")
+base <- rename(base, clust_ens = clust)
+base$CODGEO <- as.character(base$CODGEO)
+base$clust_ens <- as_factor(base$clust_ens)
+base$clust_ens <- fct_recode(base$clust_ens,
+  "Classe 1" = "1",
+  "Classe 2" = "2",
+  "Classe 3" = "3")
+
+disp_avignon <- left_join(disp_avignon, base, by = "CODGEO")
 
 class_rev <- read_delim("Classification_revenus.csv", 
     delim = ";", escape_double = FALSE, trim_ws = TRUE)
@@ -189,21 +209,6 @@ mf_layout(title = "La pauvreté dans l'unité urbaine d'Avignon (2018)",
     arrow = FALSE)
 ```
 
-```{r stock, include = FALSE}
-mf_map(comsf_avignon, col = "grey80", border = "grey50")
-mf_map(comsf_avignon, 
-       var = "NBPERS18", 
-       type = "prop", 
-       border = "white", 
-       col = "darkblue", 
-      inches = 0.3, 
-      symbol = "circle",
-       leg_title = "Population communale",
-      add= TRUE)
-mf_layout(title = "Populations communales de l'unité urbaine d'Avignon (2018)", 
-    credits = "Auteur: R. Leconte, 2022. Données: INSEE, Filosofi, 2018",
-    arrow = FALSE)
-```
 
 ```{r disc mono, message=FALSE,warning=FALSE}
 library(maptiles)
@@ -265,12 +270,34 @@ mf_layout(title = "Les discontinuités sociales les plus fortes dans l'unité ur
  mf_theme("default")
 ```
 
+```{r carto entier}
+# carte
+mf_map(comsf_avignon, 
+       var = "clust_ens", 
+       type = "typo", 
+       pal =  hcl.colors(3, "dynamic", rev = TRUE),
+       leg_title = "Classes :")
+mf_label( topbot, 
+          var = "nom",
+          cex = 0.5,
+          col = "black",
+          overlap = FALSE,
+          lines = TRUE,
+          halo=FALSE)
+mf_layout(title = "Classification dans l'unité urbaine d'Avignon (2018)",
+    credits = "Données: INSEE, Filosofi, 2018",
+    arrow = FALSE)
+ mf_theme("default")
+ knitr::include_graphics("images/Class_ens.png")
+```
+
 ```{r carto clust}
 # carte
 mf_map(comsf_avignon_mono, 
-       var = "clust", 
+       var = "clust_mono", 
        type = "typo", 
-       pal =  hcl.colors(3, "teal", rev = TRUE))
+       pal =  hcl.colors(3, "dynamic", rev = TRUE),
+       leg_title = "Classes :")
 mf_label( topbot, 
           var = "nom",
           cex = 0.5,
@@ -282,13 +309,15 @@ mf_layout(title = "Classification des familles monoparentales dans l'unité urba
     credits = "Données: INSEE, Filosofi, 2018",
     arrow = FALSE)
  mf_theme("default")
+ knitr::include_graphics("images/Class_mono.png")
 ```
 ```{r carto clust revenus}
 # carte
 mf_map(comsf_avignon, 
        var = "clust_rev", 
        type = "typo", 
-       pal =  viridis(4))
+       pal =  viridis(4),
+       leg_title = "Classes :")
 mf_label( topbot, 
           var = "nom",
           cex = 0.5,
@@ -309,7 +338,8 @@ knitr::include_graphics("images/Classification_rev.png")
 mf_map(comsf_avignon_mono, 
        var = "clust_rev_mono", 
        type = "typo", 
-       pal =  viridis(3))
+       pal =  viridis(3),
+       leg_title = "Classes :")
 mf_label( topbot, 
           var = "nom",
           cex = 0.5,
@@ -359,7 +389,8 @@ mf_map(comsf_avignon,
        var = "GI18", 
        type = "choro", 
        breaks = c(0.22,0.25,0.27,0.28,0.36),
-       pal =  hcl.colors(4, "teal", rev = TRUE))
+       pal =  hcl.colors(4, "Purp", rev = TRUE),
+       leg_title = "Indice de Gini (de 0 à 1) :")
 mf_label( topbot, 
           var = "nom",
           cex = 0.5,
@@ -380,7 +411,8 @@ mf_map(comsf_avignon_mono,
        var = "TYM5GI18", 
        type = "choro", 
        breaks = c(0.21,	0.254,	0.265,	0.278, 0.458),
-       pal =  hcl.colors(4, "teal", rev = TRUE))
+       pal =  hcl.colors(4, "Purp", rev = FALSE),
+       leg_title = "Indice de Gini (de 0 à 1) :")
 mf_label( topbot, 
           var = "nom",
           cex = 0.5,
