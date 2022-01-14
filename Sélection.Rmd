@@ -113,7 +113,8 @@ ggplot(disp_avignon) +
 ```{r classification, message=FALSE,warning=FALSE}
 #Voir fichier r classification 
 library(readr)
-
+library(questionr)
+library(tidyverse)
 base_class <- read_delim("classification_complete.csv", 
     delim = ";", escape_double = FALSE, trim_ws = TRUE)
 
@@ -137,7 +138,6 @@ base$clust_ens <- fct_recode(base$clust_ens,
   "Classe 1" = "1",
   "Classe 2" = "2",
   "Classe 3" = "3")
-
 disp_avignon <- left_join(disp_avignon, base, by = "CODGEO")
 
 class_rev <- read_delim("Classification_revenus.csv", 
@@ -402,7 +402,6 @@ mf_layout(title = "Indice de Gini dans l'unité urbaine d'Avignon (2018)",
     credits = "Données: INSEE, Filosofi, 2018",
     arrow = FALSE)
  mf_theme("default")
-
 ```
 
 ```{r gini mono}
