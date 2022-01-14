@@ -145,6 +145,12 @@ class_rev <- read_delim("Classification_revenus.csv",
 class_rev <- class_rev %>% select("CODGEO", "clust")
 class_rev <- rename(class_rev, clust_rev = clust)
 class_rev$CODGEO <- as.character(class_rev$CODGEO)
+class_rev$clust_rev <- as_factor(class_rev$clust_rev)
+class_rev$clust_rev <- fct_recode(class_rev$clust_rev,
+  "Classe 1" = "1",
+  "Classe 2" = "2",
+  "Classe 3" = "3",
+  "Classe 4" = "4")
 disp_avignon <- left_join(disp_avignon, class_rev, by = "CODGEO")
 
 class_rev_mono <- read_delim("Classification_revenus_mono.csv", 
@@ -152,7 +158,14 @@ class_rev_mono <- read_delim("Classification_revenus_mono.csv",
 class_rev_mono <- class_rev_mono %>% select("CODGEO", "clust")
 class_rev_mono <- rename(class_rev_mono, clust_rev_mono = clust)
 class_rev_mono$CODGEO <- as.character(class_rev_mono$CODGEO)
+class_rev_mono$clust_rev_mono <- as_factor(class_rev_mono$clust_rev_mono)
+class_rev_mono$clust_rev_mono <- fct_recode(class_rev_mono$clust_rev_mono,
+  "Classe 1" = "1",
+  "Classe 2" = "2",
+  "Classe 3" = "3",
+  "Classe 4" = "4")
 disp_avignon_mono <- left_join(disp_avignon_mono, class_rev_mono, by = "CODGEO")
+
 ```
 
 # Cartes
@@ -410,7 +423,7 @@ mf_map(comsf_avignon_mono,
        var = "TYM5GI18", 
        type = "choro", 
        breaks = c(0.21,	0.254,	0.265,	0.278, 0.458),
-       pal =  hcl.colors(4, "Purp", rev = FALSE),
+       pal =  hcl.colors(4, "Purp", rev = TRUE),
        leg_title = "Indice de Gini (de 0 à 1) :")
 mf_label( topbot, 
           var = "nom",
