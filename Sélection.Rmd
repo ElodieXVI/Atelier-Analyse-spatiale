@@ -186,8 +186,6 @@ comsf_avignon <- comsf %>%
   rename(CODGEO = insee)
 comsf_avignon_mono <- comsf_avignon %>% 
     select(CODGEO, contains("TYM5"))
-# interroger le système de coordoonées 
-st_crs(comsf_avignon)
 # projeter le fond de carte dans le référentiel Lambert93 (adapté pour la France)
 comsf_avignon <- st_transform(comsf_avignon, crs = 2154)
 # joindre les données attributaires
@@ -196,8 +194,6 @@ comsf_avignon <- left_join(comsf_avignon, disp_avignon, by = "CODGEO")
 # sinon, réassigner
 comsf_avignon <- st_sf(comsf_avignon)
 
-# interroger le système de coordoonées 
-st_crs(comsf_avignon_mono)
 # projeter le fond de carte dans le référentiel Lambert93 (adapté pour la France)
 comsf_avignon_mono <- st_transform(comsf_avignon_mono, crs = 2154)
 # joindre les données attributaires
@@ -376,14 +372,27 @@ qloc <- pvr_avignon %>%
   select(CODGEO, TP6018) %>% 
   mutate( QLTP60 = TP6018/14.71)
 
+## Recodage de qloc$QLTP60 en qloc$QLTP60
+qloc$QLTP60 <- cut(qloc$QLTP60,
+  include.lowest = FALSE,
+  right = FALSE,
+  dig.lab = 4,
+  breaks = c(0, 1, 2.19))
+## Recodage de qloc$QLTP60
+qloc$QLTP60 <- fct_recode(qloc$QLTP60,
+  "Inférieur à 1" = "[0,1)",
+  "Supérieur à 1" = "[1,2.19)")
+
 # cartographie du quotient de localisation
 # ajout du quotient de localisation à l'objet sf
 comsf_avignon <- left_join(comsf_avignon, qloc, by = "CODGEO")
 # cartographie du quotient
 mf_map(comsf_avignon, 
        var = "QLTP60", 
-       type = "choro", 
-       breaks = c(0.6, 0.76, 1.08, 2.18),        pal =  hcl.colors(3, "teal", rev = TRUE), border = "grey50", leg_title = "Quotient de localisation")
+       type = "typo",        
+       pal =  hcl.colors(2, "teal", rev = TRUE), 
+       border = "grey50", 
+       leg_title = "Quotient de localisation")
 mf_label( topbot, 
           var = "nom",
           cex = 0.5,
