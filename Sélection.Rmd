@@ -286,7 +286,6 @@ mf_layout(title = "Classification des familles monoparentales dans l'unité urba
     credits = "Données: INSEE, Filosofi, 2018",
     arrow = FALSE)
  mf_theme("default")
- knitr::include_graphics("images/Class_mono.png")
 ```
 ```{r carto clust revenus}
 # carte
