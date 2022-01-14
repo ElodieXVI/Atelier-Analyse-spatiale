@@ -18,8 +18,6 @@ base_class <- select(total, "CODGEO","TYM5Q218")
 ajout <- select(disp_avignon_mono, "CODGEO","TYM5PPSOC18")
 base_class <- left_join(base_class, ajout, by="CODGEO")
 base_class <- left_join(base_class, pauvre, by="CODGEO")
-
-names(base_class)
 ajout <- select(disp_avignon_mono, "CODGEO", "TYM5Q3_Q1")
 base_class2 <- left_join(base_class, ajout, by="CODGEO")
 
@@ -30,7 +28,7 @@ base_class2$densite <- ur2$densite
 
 
 Factoshiny(base_class2)
-res.PCA<-PCA(base_class2,ncp=Inf, scale.unit=FALSE,quali.sup=c(1),graph=FALSE)
+res.PCA<-PCA(base_class2,ncp=2, scale.unit=FALSE,quali.sup=c(1),graph=FALSE)
 res.HCPC<-HCPC(res.PCA,nb.clust=3,consol=TRUE,graph=FALSE)
 plot.HCPC(res.HCPC,choice='tree',title='')
 
@@ -46,7 +44,7 @@ base_ens$densite <- ur2$densite
 base_ens <- base_ens[-15,]
 
 Factoshiny(base_ens)
-res.PCA<-PCA(base_ens,ncp=Inf, scale.unit=FALSE,quali.sup=c(1),graph=FALSE)
+res.PCA<-PCA(base_ens,ncp=2, scale.unit=FALSE,quali.sup=c(1),graph=FALSE)
 res.HCPC<-HCPC(res.PCA,nb.clust=3,consol=TRUE,graph=FALSE)
 plot.HCPC(res.HCPC,choice='tree',title='')
 
@@ -70,8 +68,8 @@ data <- rename(data, prestasoc = PPSOC18)
 
 
 Factoshiny(data)
-res.PCA<-PCA(data,ncp=Inf, scale.unit=FALSE,quali.sup=c(1),graph=FALSE)
-res.HCPC<-HCPC(res.PCA,nb.clust=4,consol=TRUE,graph=FALSE)
+res.PCA<-PCA(data,ncp=2,quali.sup=c(1),graph=FALSE)
+res.HCPC<-HCPC(res.PCA,nb.clust=3,consol=TRUE,graph=FALSE)
 plot.HCPC(res.HCPC,choice='tree',title='')
 
 data$clust <- res.HCPC$data.clust$clust
@@ -96,26 +94,13 @@ data_mono$CODGEO <- as.factor(data_mono$CODGEO)
 data_mono <- data_mono[-2,]
 
 Factoshiny(data_mono)
-res.PCA<-PCA(data_mono,ncp=Inf, scale.unit=FALSE,quali.sup=c(1),graph=FALSE)
-res.HCPC<-HCPC(res.PCA,nb.clust=3,consol=TRUE,graph=FALSE)
+res.PCA<-PCA(data_mono,ncp=2,quali.sup=c(1),graph=FALSE)
+res.HCPC<-HCPC(res.PCA,nb.clust=4,consol=FALSE,graph=FALSE)
 plot.HCPC(res.HCPC,choice='tree',title='')
 
-data_mono$clust <- res.HCPC$data_mono.clust$clust
+data_mono$clust <- res.HCPC$data.clust$clust
 
 write.csv2(data_mono, "Classification_revenus_mono.csv")
-
-### CLassification des familles monoparentales avec tout
-
-data_mono_comp <- left_join(base_class2, data_mono, by="CODGEO")
-data_mono_comp$TYM5PPSOC18 <- NULL
-data_mono_comp$TYM5GI18 <- NULL
-
-data_mono_comp$gini <- disp_avignon_mono$TYM5GI18
-data_mono_comp$gini <- as.character(data_mono_comp$gini)
-
-data_mono_comp <- data_mono_comp %>% drop_na()
-
-Factoshiny(data_mono_comp)
 
 
 

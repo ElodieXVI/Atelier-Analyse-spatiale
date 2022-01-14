@@ -129,17 +129,6 @@ base$clust_mono <- fct_recode(base$clust_mono,
   "Classe 3" = "3")
 disp_avignon_mono <- left_join(disp_avignon_mono, base, by = "CODGEO")
 
-base_class_ens <- read_delim("classification_complete_ens.csv", delim = ";", escape_double = FALSE, trim_ws = TRUE)
-base <- base_class_ens %>% select("CODGEO", "clust")
-base <- rename(base, clust_ens = clust)
-base$CODGEO <- as.character(base$CODGEO)
-base$clust_ens <- as_factor(base$clust_ens)
-base$clust_ens <- fct_recode(base$clust_ens,
-  "Classe 1" = "1",
-  "Classe 2" = "2",
-  "Classe 3" = "3")
-disp_avignon <- left_join(disp_avignon, base, by = "CODGEO")
-
 class_rev <- read_delim("Classification_revenus.csv", 
     delim = ";", escape_double = FALSE, trim_ws = TRUE)
 class_rev <- class_rev %>% select("CODGEO", "clust")
@@ -279,29 +268,8 @@ mf_layout(title = "Les discontinuités sociales les plus fortes dans l'unité ur
  mf_theme("default")
 ```
 
-```{r carto entier}
-# carte
-mf_map(comsf_avignon, 
-       var = "clust_ens", 
-       type = "typo", 
-       pal =  hcl.colors(3, "dynamic", rev = TRUE),
-       leg_title = "Classes :")
-mf_label( topbot, 
-          var = "nom",
-          cex = 0.5,
-          col = "black",
-          overlap = FALSE,
-          lines = TRUE,
-          halo=FALSE)
-mf_layout(title = "Classification dans l'unité urbaine d'Avignon (2018)",
-    credits = "Données: INSEE, Filosofi, 2018",
-    arrow = FALSE)
- mf_theme("default")
- knitr::include_graphics("images/Class_ens.png")
-```
-
 ```{r carto clust}
-# carte
+# cart
 mf_map(comsf_avignon_mono, 
        var = "clust_mono", 
        type = "typo", 
@@ -334,12 +302,10 @@ mf_label( topbot,
           overlap = FALSE,
           lines = TRUE,
           halo=FALSE)
-mf_layout(title = "Classification des parts de revenus dans l'unité urbaine d'Avignon (2018)",
+mf_layout(title = "Classification de revenus dans l'unité urbaine d'Avignon (2018)",
     credits = "Données: INSEE, Filosofi, 2018",
     arrow = FALSE)
  mf_theme("default")
- 
-knitr::include_graphics("images/Classification_rev.png")
 ```
  
 ```{r carto clust revenus mono}
@@ -356,11 +322,10 @@ mf_label( topbot,
           overlap = FALSE,
           lines = TRUE,
           halo=FALSE)
-mf_layout(title = "Classification des parts des revenus des familles monoparentales dans l'unité urbaine d'Avignon (2018)",
+mf_layout(title = "Classification des revenus des familles monoparentales dans l'unité urbaine d'Avignon (2018)",
     credits = "Données: INSEE, Filosofi, 2018",
     arrow = FALSE)
  mf_theme("default")
- knitr::include_graphics("images/Classification_rev_mono.png")
 ```
 
 ```{r qloc}
