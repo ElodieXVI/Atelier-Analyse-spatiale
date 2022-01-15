@@ -115,7 +115,7 @@ ggplot(disp_avignon) +
 library(readr)
 library(questionr)
 library(tidyverse)
-base_class <- read_delim("classification_complete.csv", 
+base_class <- read_delim("Data/classification_complete.csv", 
     delim = ";", escape_double = FALSE, trim_ws = TRUE)
 
 base <- base_class %>% select("CODGEO", "clust")
@@ -129,7 +129,7 @@ base$clust_mono <- fct_recode(base$clust_mono,
   "Classe 3" = "3")
 disp_avignon_mono <- left_join(disp_avignon_mono, base, by = "CODGEO")
 
-class_rev <- read_delim("Classification_revenus.csv", 
+class_rev <- read_delim("Data/Classification_revenus.csv", 
     delim = ";", escape_double = FALSE, trim_ws = TRUE)
 class_rev <- class_rev %>% select("CODGEO", "clust")
 class_rev <- rename(class_rev, clust_rev = clust)
@@ -141,7 +141,7 @@ class_rev$clust_rev <- fct_recode(class_rev$clust_rev,
   "Classe 3" = "3")
 disp_avignon <- left_join(disp_avignon, class_rev, by = "CODGEO")
 
-class_rev_mono <- read_delim("Classification_revenus_mono.csv", 
+class_rev_mono <- read_delim("Data/Classification_revenus_mono.csv", 
     delim = ";", escape_double = FALSE, trim_ws = TRUE)
 class_rev_mono <- class_rev_mono %>% select("CODGEO", "clust")
 class_rev_mono <- rename(class_rev_mono, clust_rev_mono = clust)
@@ -153,16 +153,13 @@ class_rev_mono$clust_rev_mono <- fct_relevel(
   class_rev_mono$clust_rev_mono,
   "2", "3", "4", "1")
 
-
 class_rev_mono$clust_rev_mono <- fct_recode(class_rev_mono$clust_rev_mono,
   "Classe 1" = "2",
   "Classe 2" = "3",
   "Classe 3" = "4",
   "Classe 4" = "1")
 
-
 disp_avignon_mono <- left_join(disp_avignon_mono, class_rev_mono, by = "CODGEO")
-
 ```
 
 # Cartes
